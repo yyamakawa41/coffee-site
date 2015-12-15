@@ -78,12 +78,11 @@ router.post('/register', function(req, res, next){
 	});
 });
 
-function isLoggedIn(req, res, next){
-
-}
-
-
-
+router.get('/logout', function(req, res) {
+    req.logout();
+    req.session.destroy();
+    res.redirect('/');
+});
 
 
 
