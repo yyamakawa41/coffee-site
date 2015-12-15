@@ -1,3 +1,84 @@
+/* line 6, ../../compass/sass/layout/_footer.scss */
+#footer {
+  font-size: 14px;
+  background: #3a2f27;
+  clear: both;
+  overflow: hidden;
+  margin-top: 70px;
+  padding: 25px 0;
+  border-top: 1px solid #a08855;
+}
+
+/* line 16, ../../compass/sass/layout/_footer.scss */
+#footer-logo {
+  display: block;
+  width: 200px;
+  height: 0;
+  padding-top: 124px;
+  overflow: hidden;
+  margin: 0 auto;
+  background: url('../images/dc_roasters_200x124_lt.png?1441679937') no-repeat;
+}
+
+/* line 26, ../../compass/sass/layout/_footer.scss */
+#footer-container {
+  color: #fff;
+  text-align: center;
+}
+/* line 30, ../../compass/sass/layout/_footer.scss */
+#footer-container p {
+  width: 60%;
+  margin: 0 auto;
+}
+/* line 35, ../../compass/sass/layout/_footer.scss */
+#footer-container ul {
+  width: 60%;
+  margin: 0 auto 25px;
+  padding: 25px 0;
+  border-bottom: 1px solid #58483c;
+}
+/* line 40, ../../compass/sass/layout/_footer.scss */
+#footer-container ul li {
+  display: inline;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+/* line 46, ../../compass/sass/layout/_footer.scss */
+#footer-container ul li a {
+  font-size: 16px;
+  color: #3a2f27;
+  text-transform: lowercase;
+  display: inline-block;
+  padding: 0 10px;
+  color: #fff;
+}
+
+/* line 59, ../../compass/sass/layout/_footer.scss */
+#copywrite ul {
+  border: none;
+  padding: 0;
+}
+
+/* line 66, ../../compass/sass/layout/_footer.scss */
+#attributions p {
+  color: #776050;
+  font-size: 12px;
+  margin: 0 auto;
+  text-align: center;
+}
+/* line 72, ../../compass/sass/layout/_footer.scss */
+#attributions ul {
+  border: none;
+  padding-top: 10px;
+  padding: 0;
+}
+/* line 79, ../../compass/sass/layout/_footer.scss */
+#attributions ul li a {
+  color: #776050;
+  font-size: 12px;
+}
+
 /* line 6, ../../compass/sass/views/_home.scss */
 h2.how-it-works_label {
   text-align: center;
