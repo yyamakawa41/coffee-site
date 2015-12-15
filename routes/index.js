@@ -5,17 +5,56 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', {  user: req.user });
-});
+   if(req.session.username){
+        res.redirect('/choices');
+    }
+    
+    if (req.query.failedlogin){
+        res.render('login', { failed : "Your username or password is incorrect." });    
+    }
+    
+    res.render('login', { user : req.user });
+}).post('/login', function(req, res, next) {
 
+    if(req.body.getStarted){
+        Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
+            if (err) {
+                return res.render('register', { err : err });
+            }
+            if(!err)
+            passport.authenticate('local')(req, res, function () {
+                req.session.username = req.body.username;
+                res.render('choices', { username : req.session.username });
+            });
+        });        
+    }
 
-router.get('/login', function(req, res, next){
-	res.render('login');
-});
+    if (!req.body.getStarted){
+      passport.authenticate('local', function(err, user, info) {
+        if (err) {
+          return next(err); 
+        }
+        
+        if (! user) {
+          return res.redirect('/login?failedlogin=1');
+        }
+        if (user){
+            
+            passport.serializeUser(function(user, done) {
+              console.log("serializing " + user.username);
+              done(null, user);
+            });
 
-router.post('login', passport.authenticate('local'), function(req, res){
-	
-	res.redirect('/');
+            passport.deserializeUser(function(obj, done) {
+              console.log("deserializing " + obj);
+              done(null, obj);
+            });        
+            req.session.username = user.username;
+        }
+
+        return res.redirect('/choices');
+      })(req, res, next);
+    }
 });
 
 
@@ -27,16 +66,15 @@ router.post('/register', function(req, res, next){
 	Account.register(new Account(
 	{username: req.body.username}),
 	req.body.password,
-	function(error, account){
-		if (error){
+	function(err, account){
+		if (err){
 			console.log(error);
-			return res.render('register');
-		}else{
-			passport.authenticate('local')(req, res, function(){
-				req.session.username = req.body.username;
-				res.redirect('/')
-			})
+			return res.render('register', {err : err});
 		}
+		passport.authenticate('local')(req, res, function(){
+				req.session.username = req.body.username;
+				res.redirect('index', {username : req.session.username});
+		});
 	});
 });
 
