@@ -9,9 +9,9 @@ block content
 		if(!user)
 			h1 Login Page
 			if (failed)
-			  p.lead #{failed}
+				p.lead #{failed}
 			if (!failed)
-			  p.lead Please enter your username and password to login.      
+				p.lead Please enter your username and password to login.      
 			br
 			form#login-form(role='form', action='/login', method='post', style='max-width: 300px;')
 				.form-group
