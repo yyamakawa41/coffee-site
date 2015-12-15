@@ -1,3 +1,29 @@
+/* line 6, ../../compass/sass/layout/_layout.scss */
+body {
+  font-family: 'Roboto', sans-serif;
+  color: #3a2f27;
+  background: #edebe6;
+  font-size: 14px;
+  padding-top: 85px;
+  min-width: 320px;
+}
+
+/* line 16, ../../compass/sass/layout/_layout.scss */
+.cta-container {
+  text-align: center;
+  margin: 30px auto;
+}
+/* line 20, ../../compass/sass/layout/_layout.scss */
+.cta-container a {
+  display: inline-block;
+}
+
+/* line 25, ../../compass/sass/layout/_layout.scss */
+.error {
+  font-style: italic;
+  color: #dc0707;
+}
+
 /* line 6, ../../compass/sass/layout/_header.scss */
 #header {
   background: url('../images/CupInBeans.jpg?1441679937') no-repeat center;
