@@ -1,0 +1,53 @@
+extends layout
+
+block content
+
+	#choices.container
+		#plan-wrapper
+			#choices-header Tell us what you want!!
+			#choices-sub-header Shipping is free and you can skip any week.
+			form(name="choices-form", action="/choices", method="post")
+				#choices-frequency.choices-block
+					.row
+						.choices-image.col-sm-6
+							image(src='/images/calendar.png')
+						.col-sm-6
+							h2.choices-label 1. Frequency
+							.choices-lower-text-wrapper
+								.choices-lower-text How often would you like us to send you your coffee
+								select(id="frequency", name="frequency", class="form-control")
+									option(value="weekly") Weekly
+									option(value="biweekly") Every Two Weeks
+									option(value="monthly") Monthly
+									option(value="quarterly") Quarterly
+									option(value="semiannually") Semi-Annually									
+									option(value="annually") Annually
+								.choices-help-text You can cancel anytime. You can skip anytime.
+
+				#choices-quantity.choices-block
+					.row
+						.choices-image.col-sm-6
+							image(src='/images/food-scale.png')
+						.col-sm-
+							h2.choices-label 2. Quantity
+							.choices-lower-text-wrapper
+								.choices-lower-text How many pounds (in increments of .25 lbs) would you like each delivery?
+									input(type="number", step=.25, min=0, name="quarterPounds", value=0)
+								.choices-help-text You can cancel anytime. You can skip anytime.
+
+				#choices-grind.choices-block
+					.row
+						.choices-image.col-sm-6
+							image(src='/images/beans.png')
+						.col-sm-6
+							h2.choices-label 3. Grind Type
+							.choices-lower-text-wrapper
+								.choices-lower-text How do you like your grinds?
+								select(id="frequency", name="frequency", class="form-control")
+									option(value="extraCourse") Extra Course
+									option(value="course") Course
+									option(value="mediumCourse") Medium Course
+									option(value="fine") Fine
+									option(value="veryFine") Very Fine									
+								.choices-help-text You can cancel anytime. You can skip anytime.
+				input.btn.btn-primary.btn-lrg(type='submit', name='submit')
