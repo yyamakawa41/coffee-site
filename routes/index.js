@@ -4,7 +4,13 @@ var Account = require('../models/account');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+
+router.get('/', function (req, res) {
+    res.render('index', { username : req.session.username });
+});
+
+
+router.get('/login', function(req, res, next) {
    if(req.session.username){
         res.redirect('/choices');
     }
@@ -14,7 +20,10 @@ router.get('/', function(req, res, next) {
     }
     
     res.render('login', { user : req.user });
-}).post('/login', function(req, res, next) {
+});
+
+
+router.post('/login', function(req, res, next) {
 
     if(req.body.getStarted){
         Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
