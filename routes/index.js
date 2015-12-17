@@ -30,7 +30,7 @@ router.post('/register', function(req, res) {
         }
         passport.authenticate('local')(req, res, function () {
             req.session.username = req.body.username;
-            res.render('index', { username : req.session.username });
+            res.render('/choices', { username : req.session.username });
         });
     });
 });
@@ -43,7 +43,7 @@ router.get('/login', function(req, res) {
 
     //the user is already logged in
     if(req.session.username){
-        res.redirect('/choices');
+        res.redirect('/');
     }
     //req.query.login pulls the query parameters right out of the http headers!
     //They are here and failed a login
@@ -52,99 +52,163 @@ router.get('/login', function(req, res) {
     }
     //They are here and aren't logged in
     res.render('login', { user : req.user });
-}).post('/login', function(req, res, next) {
+});
 
-    if(req.body.getStarted){
-        Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
-            if (err) {
-                return res.render('register', { err : err });
-            }
-            if(!err)
-            passport.authenticate('local')(req, res, function () {
-                req.session.username = req.body.username;
-                res.render('choices', { username : req.session.username });
-            });
-        });        
-    }
-
-    if (!req.body.getStarted){
-      passport.authenticate('local', function(err, user, info) {
-        if (err) {
-          return next(err); // will generate a 500 error
+router.post('/login', function (req, res, next){
+    passport.authenticate('local', function (err, user, info){
+        if(err){
+            return next(err);
         }
-        // Generate a JSON response reflecting authentication status
-        if (! user) {
-          return res.redirect('/login?failedlogin=1');
-        }
-        if (user){
-            // Passport session setup.
-            passport.serializeUser(function(user, done) {
-              console.log("serializing " + user.username);
-              done(null, user);
-            });
 
-            passport.deserializeUser(function(obj, done) {
-              console.log("deserializing " + obj);
-              done(null, obj);
-            });        
+        if(!user){
+            return res.redirect('login?failedlogin=1');
+        }
+        if(user){
+            console.log(user);
+            passport.serializeUser(function (user, done){
+                done(null, user);
+            });
+            passport.deserializeUser(function (obj, done){
+                done(null, obj);
+            });
             req.session.username = user.username;
+            console.log(req.session.username);
         }
+        return res.redirect('/choices')
 
-        return res.redirect('/choices');
-      })(req, res, next);
-    }
+    })(req, res, next);
 });
 
 /* ---------------------------- */
 /* ----------Logout----------- */
 /* ---------------------------- */
 router.get('/logout', function(req, res) {
+    req.logout();
     req.session.destroy();
     res.redirect('/');
 });
 
 router.get('/choices', function (req, res, next){
-  if(req.session.username){
-    res.render('choices');
-  }else{
-    res.redirect('/');
-  }
+  //Check to see if user is logged in
+    if(!req.session.username){
+        res.redirect('/login');
+    }
+    else{
+        //Check to see if they have preferences already
+        Account.findOne({username: req.session.username},
+            function (err, doc){
+                var currGrind = doc.grind ? doc.grind : undefined
+                var currPounds = doc.pounds ? doc.pounds : undefined
+                var currFrequency = doc.frequency ? doc.frequency : undefined
+                console.log(currGrind)
+                console.log(currFrequency)
+
+                res.render('choices', { user: req.session.username,
+                                        active: 'options',
+                                        grind: currGrind,
+                                        pounds: currPounds,
+                                        frequency: currFrequency
+                                      });
+
+            });
+    }
   
 });
 
 router.post('/choices', function (req, res, next){
-  if(req.session.username){
-    Account.findOne({username: req.session.username},
-    function (err, doc){
-      var grind = doc.grind;
-      var frequency = doc.frequency;
-      var pounds = doc.quarterPounds;
+    //Are they logged in
+    if(!req.session.username){
+        res.redirect('/login');
+    }
+    else{
+        var newGrind = req.body.grind;
+        var newFrequency = req.body.frequency;
+        var newPounds = req.body.pounds;
 
-    });
+        var update = {grind: newGrind, frequency: newFrequency, pounds: newPounds};
 
-     var newGrind =  req.body.grind;
-     var newFrequency = req.body.frequency;
-     var newPounds = req.body.pounds;
+        Account.findOneAndUpdate(
+        {username: req.session.username},
+        update, 
+        {upsert: true},
+        function (err, account){
+            if (err){
+                res.send('There was an error saving your preferences. Please re-enter your order details. ERROR: '+err)
 
-     Account.findOneAndUpdate(
-      { username: req.session.username },
-      { grind:newGrind },
-      { upsert: true },
-      function (err, account){
-        if (err){
-          res.send('There was an error saving your preferences. Please re-enter or send this error to the help team:' +err)
-        }else{
-          account.save;
-        }
-      }
-    )
-  }
+            }else{
+                account.save;
+            }
+        });
+        res.redirect('/delivery');
+    }
 });
 
+router.get('/delivery', function (req, res, next){
+    if(!req.session.username){
+        res.redirect('/login');
+    }else{
+        Account.findOne({username: req.session.username},
+            function (err, doc){
+                var currAddr1 = doc.addressLine1 ? doc.addressLine1 : ''
+                var currAddr2 = doc.addressLine2 ? doc.addressLine2 : ''
+                var currFullName = doc.fullName ? doc.fullName : ''
+                var currCity = doc.city ? doc.city : ''
+                var currState = doc.state ? doc.state : ''
+                var currZipCode = doc.zipCode ? doc.zipCode : ''
+                var currDeliveryDate = doc.deliveryDate ? doc.deliveryDate : ''
+                res.render('delivery', {user: req.session.username,
+                                        active: 'delivery',
+                                        fullName: currFullName,
+                                        addressLine1: currAddr1,
+                                        addressLine2: currAddr2,
+                                        city: currCity,
+                                        state: currState,
+                                        zipCode: currZipCode,
+                                        deliveryDate: currDeliveryDate
+                                        });
+            });
+        
 
+    }
+});
 
+router.post('/delivery', function (req, res, next){
+    if(!req.session.username){
+        res.redirect('/login');
+    }
+    else{
+        var newFullName = req.body.fullName
+        var newAddressLine1 = req.body.addressLine1
+        var newAddressLine2 = req.body.addressLine2
+        var newCity = req.body.city
+        var newState = req.body.state
+        var newZipCode = req.body.zipCode
+        var newDeliveryDate = req.body.deliveryDate
 
+        var update = {  
+                        fullName: newFullName,
+                        addressLine1: newAddressLine1,
+                        addressLine2: newAddressLine2,
+                        city: newCity,
+                        state: newState,
+                        zipCode: newZipCode,
+                        deliveryDate: newDeliveryDate
+                     }
 
+        Account.findOneAndUpdate({username: req.session.username},
+            update,
+            {upsert: true},
+            function (err, account){
+                if (err){
+                    res.send('There was an error saving your preferences. Please re-enter your order details. ERROR: '+err)
+                }else{
+                    account.save;
+                }
+        });
+        res.redirect('/')
+
+    }
+});
 
 
 
