@@ -7,7 +7,7 @@ var Account = require('../models/account');
 var router = express.Router();
 var nodemailer = require('nodemailer');
 var vars = require('../config/vars.json');
-
+var stripe = require('stripe')("sk_test_8uPMm6EpR9q7pkRJpYhaIInB");
 /* GET home page. */
 router.get('/', function (req, res) {
     //res.send(req.session);
@@ -213,17 +213,40 @@ router.post('/delivery', function (req, res, next){
 });
 
 
-router.get('/email', function ( req, rec, next){
+router.get('/email', function ( req, res, next){
   var transporter = nodemailer.createTransport({
     service: "Gmail", 
     auth: {
       user: vars.email,
       pass: vars.password
     }
-})
+  });
+  var text = "This is a test email sent from my node server";
+  var mailOptions = {
+    from: 'Yohsuke Yamakawa <yyamakawa@gmail.com>',
+    to: 'Yohsuke Yohsuke <yyamakawa@gmail.com',
+    subject: 'This is a test subject',
+    text: text
+  }
+
+  transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+      console.log(error);
+      res.json({response: error});
+    }else{
+      console.log("Message was successfully sent, Response was " + info.response);
+      res.json({response: "success"});
+    }
+  })
 });
 
+router.post('/payment', function (req, res, next){
+  
+});
 
+router.get('/contact', function ( req, res, next){
+  res.render('contact');
+});
 
 
 module.exports = router;
