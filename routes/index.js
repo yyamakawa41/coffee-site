@@ -241,7 +241,19 @@ router.get('/email', function ( req, res, next){
 });
 
 router.post('/payment', function (req, res, next){
-  
+  stripe.charge.create({
+    amount: 400,
+    currency: "usd",
+    source: req.body.stripeToken,
+    description: "Charge to " + req.body.stripeEmail
+  }, function(err, charge){
+    console.log(charge)
+    if(err){
+      res.send('you got an error.' + err)
+    }else{
+      res.redirect('/thankyou')
+    }
+  });
 });
 
 router.get('/contact', function ( req, res, next){
