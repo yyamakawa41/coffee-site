@@ -5,6 +5,8 @@ var passport = require('passport');
 //Require our account.js file which resides in models one dir up
 var Account = require('../models/account');
 var router = express.Router();
+var nodemailer = require('nodemailer');
+var vars = require('../config/vars.json');
 
 /* GET home page. */
 router.get('/', function (req, res) {
@@ -211,7 +213,15 @@ router.post('/delivery', function (req, res, next){
 });
 
 
-
+router.get('/email', function ( req, rec, next){
+  var transporter = nodemailer.createTransport({
+    service: "Gmail", 
+    auth: {
+      user: vars.email,
+      pass: vars.password
+    }
+})
+});
 
 
 
