@@ -2,16 +2,35 @@ extends layout
 
 block content
 	#payment.container
+		#plan-wrapper
+			#plan-wrapper
+			h1 Payment
+			p Please enter your payment info
 
+			.form-inner
+				if (grind)
+					#order-summary
+						#summary-title Your Order Summary:
+						ul
+							li Shipping Date: #{nextDelivery}
+							li Grind Preferrence: #{grind}
+							li Order frequency: #{frequency}
+							li Ammount (in lbs): #{pounds}
+						ul
+							li.header Shipping address
+							li Name: #{fullName}
+							li Address: #{address1}
+							if (address2)
+								li Address: #{address2}
+							li City: #{city}
+							li State: #{state}
+							li Zip: #{zip}
+						#pay-with-card
+							
+				if (!grind)
+					#no-order
+						#pay-with-card
+							p We will use your current settings to update your payment info.
+							br
+							include payment.html
 
-<form action="/payment" method="POST">
-  <script
-    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="pk_test_oBnruhi18FZkMsyhCGr9YxO8"
-    data-amount="2000"
-    data-name="Demo Site"
-    data-description="2 widgets ($20.00)"
-    data-image="/128x128.png"
-    data-locale="auto">
-  </script>
-</form>

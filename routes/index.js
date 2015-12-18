@@ -7,7 +7,7 @@ var Account = require('../models/account');
 var router = express.Router();
 var nodemailer = require('nodemailer');
 var vars = require('../config/vars.json');
-var stripe = require('stripe')("sk_test_8uPMm6EpR9q7pkRJpYhaIInB");
+var stripe = require('stripe')("sk_test_5yxP4OcPQfyQeHfXuWjRYmfA");
 /* GET home page. */
 router.get('/', function (req, res) {
     //res.send(req.session);
@@ -240,14 +240,45 @@ router.get('/email', function ( req, res, next){
   })
 });
 
+
+router.get('/payment', function (req, res, next){
+    //If the user is logged in...
+    if(req.session.username){
+        Account.findOne({ "username": req.session.username}, function (err, doc, next){
+            var fullName = doc.fullName ? doc.fullName : undefined;
+            var address1 = doc.address1 ? doc.address1 : undefined;
+            var address2 = doc.address2 ? doc.address2 : undefined;
+            var city = doc.city ? doc.city : undefined;
+            var state = doc.city ? doc.state : undefined;
+            var zip = doc.zip ? doc.zip : undefined;
+            var nextDelivery = doc.nextOrderDate ? doc.nextOrderDate : undefined
+            res.render( 'payment', {
+                username: req.session.username,
+                fullName: fullName,
+                address1: address1,
+                address2: address2,
+                city: city,
+                state: state,
+                zip: zip,
+                nextDelivery: nextDelivery
+            });
+        });
+    }    
+    if(!req.session.username){
+        //The user is not logged in. Send them to the login page.
+        res.redirect('/login');
+    }    
+});
+
+
 router.post('/payment', function (req, res, next){
-  stripe.charge.create({
+  stripe.charges.create({
     amount: 400,
     currency: "usd",
     source: req.body.stripeToken,
     description: "Charge to " + req.body.stripeEmail
   }, function(err, charge){
-    console.log(charge)
+    console.log(req.body)
     if(err){
       res.send('you got an error.' + err)
     }else{
